@@ -14,22 +14,20 @@
 
 void send_file(char buffer[1024], int sockfd)
 {
-    const int fileSize = 2097152; 
-    // send first the size of the file
-    if (send(sockfd, &fileSize, sizeof(fileSize), 0) == -1) {
+    const int file_Size = 2*1024*1024; 
+    if (send(sockfd, &file_Size, sizeof(file_Size), 0) == -1) {
         perror("ERROR writing to socket");
         exit(1);
     }
 
-    // Generate and send a file of at least 2MB
-    for (int i = 0; i < fileSize / BUFFER_SIZE; i++)
+    for (int i = 0; i < file_Size / BUFFER_SIZE; i++)
     {
         memset(buffer, 'A', BUFFER_SIZE);
-        long n = write(sockfd, buffer, BUFFER_SIZE);
+        ssize_t n = write(sockfd, buffer, BUFFER_SIZE);
         if (n < 0)
         {
             perror("ERROR writing to socket");
-            exit(1);
+            exit(EXIT_FAILURE);
         }
     }
 }
